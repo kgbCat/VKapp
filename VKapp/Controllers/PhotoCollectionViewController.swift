@@ -7,52 +7,77 @@
 
 import UIKit
 
-private let reuseIdentifier = "Cell"
-
 class PhotoCollectionViewController: UICollectionViewController {
-
+    
+    private let networkService = NetworkRequests()
+    private var photos = [VkPhoto]() {
+        didSet {
+            collectionView.reloadData()
+        }
+    }
+    
+    var userID: Int?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // "FriendPhoto" Register
+         let cellNib = UINib(
+             nibName: K.CellId.FriendPhotoCell,
+             bundle: nil)
+         collectionView.register(cellNib,forCellWithReuseIdentifier: K.CellId.FriendPhotoCell)
+        
+        if let userID = userID {
+            networkService.getPhotos(userID: userID) { [weak self] VkPhotos in
+                guard
+                    let self = self,
+                    let photos = VkPhotos
+                else { return }
+                self.photos = photos
+            }
+        }
 
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Register cell classes
-        self.collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
-
-        // Do any additional setup after loading the view.
     }
 
-    /*
+
     // MARK: - Navigation
+     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+         guard let selectedItem = sender as? VkPhoto else { return }
+         if segue.identifier ==  K.Segue.showPhoto {
+             guard let destinationVC = segue.destination as? PhotoViewController else { return }
+             destinationVC.selectedData = selectedItem
+     }
+ }
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using [segue destinationViewController].
-        // Pass the selected object to the new view controller.
-    }
-    */
+ override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+
+     let selectedItem = photos[indexPath.item]
+     self.performSegue(withIdentifier: K.Segue.showPhoto, sender: selectedItem)
+
+//        self.present(desVC, animated: true, completion: nil)
+     
+             
+ }
 
     // MARK: UICollectionViewDataSource
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 0
+        return 1
     }
 
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of items
-        return 0
+        return photos.count
     }
 
-    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
+    override func collectionView(_ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: K.CellId.FriendPhotoCell, for: indexPath) as? PhotoCollectionViewCell
+            else { return UICollectionViewCell() }
+        cell.configure(imageURL: photos[indexPath.row] .sizes.first(where: { ("x").contains($0.type) })?.url ?? "")
     
-        // Configure the cell
-    
-        return cell
-    }
+    return cell
+}
 
     // MARK: UICollectionViewDelegate
 

@@ -10,13 +10,6 @@ import WebKit
 
 class LoginViewController: UIViewController {
     
-    @IBOutlet weak var webView: UIWebView! {
-        didSet {
-            webView.navigationDelegate = self
-        }
-    }
-    
-    
     private var urlComponents: URLComponents = {
         var urlComponents = URLComponents()
         urlComponents.scheme = "https"
@@ -34,29 +27,35 @@ class LoginViewController: UIViewController {
     }()
     lazy var request = URLRequest(url: urlComponents.url!)
     
+    @IBAction func logoutSegue(for unwindSegue: UIStoryboardSegue) {
+        Session.instance.token = ""
+        Session.instance.userId = 0
+        
+        let dataStore = WKWebsiteDataStore.default()
+        dataStore.fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { (records) in
+            for record in records {
+                if record.displayName.contains("vk") {
+                    dataStore.removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), for: [record], completionHandler: { [weak self] in
+                        self?.webView.load(self!.request)
+                    })
+                }
+            }
+        }
+        webView.load(request)
+    }
     
-
-    override func viewDidLoad() {
+    @IBOutlet weak var webView: WKWebView! {
+    didSet {
+            webView.navigationDelegate = self
+        }
+    }
+  override func viewDidLoad() {
         super.viewDidLoad()
         
         webView.navigationDelegate = self
         webView.load(request)
-
-        // Do any additional setup after loading the view.
     }
     
-    
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }
 extension LoginViewController: WKNavigationDelegate {

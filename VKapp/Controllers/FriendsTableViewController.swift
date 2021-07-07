@@ -6,40 +6,59 @@
 //
 
 import UIKit
+import RealmSwift
 
-class FriendsTableViewController: UITableViewController {
-
+class FriendsTableViewController: UITableViewController, UISearchBarDelegate {
+    private let networkService = NetworkRequests()
+    private let users = try? RealmService.load(typeOf: Friend.self).filter("firstName != 'DELETED' AND userAvatarURL != 'https://vk.com/images/deactivated_200.png'").sorted(byKeyPath: "firstName")
+    private var token: NotificationToken?
+    
+    @IBOutlet weak var searchBar: UISearchBar!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
+            
+        observeRealm()
+        let nib = UINib(nibName: K.CellId.FriendsCell, bundle: nil)
+        tableView.register(nib, forCellReuseIdentifier: K.CellId.FriendsCell)
+        
+        networkService.getFriends { vkFriends in
+            guard let friends = vkFriends else { return }
+            do {
+                try RealmService.save(items: friends)
+            } catch {
+                print(error)
+            }
+        }
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+    }
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        token?.invalidate()
     }
 
     // MARK: - Table view data source
 
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 0
-    }
-
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return 0
+        return users?.count ?? 0
     }
 
-    /*
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
-
-        // Configure the cell...
+        guard
+            let cell = tableView.dequeueReusableCell(withIdentifier: K.CellId.FriendsCell, for: indexPath) as? UserTableViewCell,
+            let currentFriend = users?[indexPath.row]
+        else { return UITableViewCell() }
+        
+        cell.configure(
+            name: currentFriend.fullName,
+            imageURL: currentFriend.userAvatarURL
+            )
 
         return cell
     }
-    */
 
     /*
     // Override to support conditional editing of the table view.
@@ -76,14 +95,39 @@ class FriendsTableViewController: UITableViewController {
     }
     */
 
-    /*
+
     // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
+     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+         defer { tableView.deselectRow(at: indexPath, animated: true) }
+         performSegue(
+             withIdentifier: K.Segue.showPhotoCollection,
+             sender: nil)
+     }
 
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let
+            destination = segue.destination as? PhotoCollectionViewController,
+           let index = tableView.indexPathForSelectedRow?.row {
+            destination.userID = users?[index].id
+//            print(users?[index].id ?? 0)
+
+        }
+    }
+}
+
+extension FriendsTableViewController {
+    private func observeRealm() {
+        token = users?.observe({ changes in
+            switch changes {
+            case .initial( _):
+                self.tableView.reloadData()
+            case let .update(results, deletions, insertions, modifications):
+                print(results, deletions, insertions, modifications)
+                self.tableView.reloadData()
+            case .error(let error):
+                print(error)
+            }
+        })
+    }
 }

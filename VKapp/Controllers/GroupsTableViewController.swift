@@ -6,40 +6,66 @@
 //
 
 import UIKit
+import RealmSwift
 
 class GroupsTableViewController: UITableViewController {
+    
+    private let networkService = NetworkRequests()
+    private let groups = try? RealmService.load(typeOf: Groups.self)
+    private var token: NotificationToken?
 
+//    @IBAction func addGroup(_ sender: UIBarButtonItem) {
+//        guard
+//            segue.identifier == K.Segue.addGroup ,
+//            let SearchGroupsController = segue.source as? SearchGroupsTableViewController,
+//            let indexPath = SearchGroupsController.tableView.indexPathForSelectedRow
+//        else { return }
+//    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
+        let nib = UINib(nibName: K.CellId.GroupCell, bundle: nil)
+        tableView.register(nib, forCellReuseIdentifier: K.CellId.GroupCell)
+        observeRealm()
+        //fetch groups from the account
+        networkService.getGroup { vkGroups in
+            guard let groups = vkGroups else { return }
+            do {
+                try RealmService.save(items: groups)
+            } catch {
+                print(error)
+            }
+        }
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+    }
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        token?.invalidate()
     }
 
     // MARK: - Table view data source
 
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 0
-    }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return 0
+     
+        return groups?.count ?? 0
     }
 
-    /*
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
-
-        // Configure the cell...
+        guard
+            let cell = tableView.dequeueReusableCell(withIdentifier: K.CellId.GroupCell, for: indexPath) as? GroupTableViewCell,
+            let currentGroup = groups?[indexPath.row]
+        else { return UITableViewCell() }
+             
+        cell.configure(name: currentGroup.name, imageURL: currentGroup.photo)
 
         return cell
     }
-    */
+
 
     /*
     // Override to support conditional editing of the table view.
@@ -86,4 +112,20 @@ class GroupsTableViewController: UITableViewController {
     }
     */
 
+}
+extension GroupsTableViewController {
+    
+    private func observeRealm() {
+        token = groups?.observe({ changes in
+            switch changes {
+            case .initial( _):
+                self.tableView.reloadData()
+            case let .update(results, deletions, insertions, modifications):
+                print(results, deletions, insertions, modifications)
+                self.tableView.reloadData()
+            case .error(let error):
+                print(error)
+            }
+        })
+    }
 }

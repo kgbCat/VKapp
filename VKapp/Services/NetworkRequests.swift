@@ -42,7 +42,7 @@ class NetworkRequests {
                         let json = JSON(data)
                         let usersJSONs = json["response"]["items"].arrayValue
                         let vkUsers = usersJSONs.map { Friend($0) }
-                        print(vkUsers)
+//                        print(vkUsers)
                         DispatchQueue.main.async {
                             completion(vkUsers)
                         }
@@ -131,7 +131,7 @@ class NetworkRequests {
                         let photoJSONs = json["response"]["items"].arrayValue
                         let vkUserPhoto = photoJSONs.map { VkPhoto($0) }
                         completion(vkUserPhoto)
-                        print(vkUserPhoto)
+//                        print(vkUserPhoto)
                     case .failure(let error):
                         print(error)
                         completion(nil)
