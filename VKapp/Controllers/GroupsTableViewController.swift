@@ -14,13 +14,15 @@ class GroupsTableViewController: UITableViewController {
     private let groups = try? RealmService.load(typeOf: Groups.self)
     private var token: NotificationToken?
 
-//    @IBAction func addGroup(_ sender: UIBarButtonItem) {
-//        guard
-//            segue.identifier == K.Segue.addGroup ,
-//            let SearchGroupsController = segue.source as? SearchGroupsTableViewController,
-//            let indexPath = SearchGroupsController.tableView.indexPathForSelectedRow
-//        else { return }
-//    }
+    @IBAction func addGroup(segue: UIStoryboardSegue) {
+        guard
+            segue.identifier == K.Segue.addGroup ,
+            let SearchGroupsController = segue.source as? SearchGroupsTableViewController,
+            let indexPath = SearchGroupsController.tableView.indexPathForSelectedRow
+        else { return }
+        let _ = SearchGroupsController.searchedGroups[indexPath.row]
+            tableView.reloadData()
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()

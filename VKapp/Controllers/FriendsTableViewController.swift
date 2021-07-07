@@ -11,6 +11,9 @@ import RealmSwift
 class FriendsTableViewController: UITableViewController, UISearchBarDelegate {
     private let networkService = NetworkRequests()
     private let users = try? RealmService.load(typeOf: Friend.self).filter("firstName != 'DELETED' AND userAvatarURL != 'https://vk.com/images/deactivated_200.png'").sorted(byKeyPath: "firstName")
+    
+    var searchFriends: Results<Friend>?
+    
     private var token: NotificationToken?
     
     @IBOutlet weak var searchBar: UISearchBar!
@@ -19,8 +22,12 @@ class FriendsTableViewController: UITableViewController, UISearchBarDelegate {
         super.viewDidLoad()
             
         observeRealm()
+        
         let nib = UINib(nibName: K.CellId.FriendsCell, bundle: nil)
         tableView.register(nib, forCellReuseIdentifier: K.CellId.FriendsCell)
+        
+        searchBar.delegate = self
+        searchBar.backgroundColor = .clear
         
         networkService.getFriends { vkFriends in
             guard let friends = vkFriends else { return }
@@ -30,6 +37,8 @@ class FriendsTableViewController: UITableViewController, UISearchBarDelegate {
                 print(error)
             }
         }
+        
+        searchFriends = users
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -43,13 +52,13 @@ class FriendsTableViewController: UITableViewController, UISearchBarDelegate {
     // MARK: - Table view data source
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return users?.count ?? 0
+        return searchFriends?.count ?? 0
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard
             let cell = tableView.dequeueReusableCell(withIdentifier: K.CellId.FriendsCell, for: indexPath) as? UserTableViewCell,
-            let currentFriend = users?[indexPath.row]
+            let currentFriend = searchFriends?[indexPath.row]
         else { return UITableViewCell() }
         
         cell.configure(
@@ -68,17 +77,27 @@ class FriendsTableViewController: UITableViewController, UISearchBarDelegate {
     }
     */
 
-    /*
-    // Override to support editing the table view.
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            // Delete the row from the data source
+//             Delete the row from the data source
             tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
     }
-    */
+    }
+    // MARK SEARCH BAR
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text == "" {
+            searchFriends = users
+      
+        } else {
+            searchFriends = searchFriends?.filter("firstName CONTAINS[cd] %@ OR lastName CONTAINS[cd] %@", searchBar.text!, searchBar.text!).sorted(byKeyPath: "firstName", ascending: true)
+         
+        }
+
+        tableView.reloadData()
+    }
+    
+    
+    
 
     /*
     // Override to support rearranging the table view.

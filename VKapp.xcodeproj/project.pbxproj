@@ -14,6 +14,7 @@
 		0AC8C91426952AF500F4C28D /* UserCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0AC8C91326952AF500F4C28D /* UserCell.xib */; };
 		0AC8C92026952C1600F4C28D /* GroupCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0AC8C91F26952C1600F4C28D /* GroupCell.xib */; };
 		0AC8C92426952C5100F4C28D /* FriendPhoto.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0AC8C92326952C5100F4C28D /* FriendPhoto.xib */; };
+		0AC8C9392695BF2900F4C28D /* SearchAllGroups.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC8C9382695BF2900F4C28D /* SearchAllGroups.swift */; };
 		0AEA7CAF2693DC9D00231AED /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEA7CAE2693DC9D00231AED /* AppDelegate.swift */; };
 		0AEA7CB12693DC9D00231AED /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEA7CB02693DC9D00231AED /* SceneDelegate.swift */; };
 		0AEA7CB62693DC9D00231AED /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0AEA7CB42693DC9D00231AED /* Main.storyboard */; };
@@ -27,7 +28,6 @@
 		0AEA7CDB2693DF8200231AED /* VkPhotos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEA7CDA2693DF8200231AED /* VkPhotos.swift */; };
 		0AEA7CDF2693DFC100231AED /* Friend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEA7CDE2693DFC100231AED /* Friend.swift */; };
 		0AEA7CE22693DFE000231AED /* Groups.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEA7CE12693DFE000231AED /* Groups.swift */; };
-		0AEA7CE52693DFFB00231AED /* SearchGroups.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEA7CE42693DFFB00231AED /* SearchGroups.swift */; };
 		0AEA7CE92693E10F00231AED /* UserAvatarImg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEA7CE82693E10F00231AED /* UserAvatarImg.swift */; };
 		0AEA7CEC2693E13000231AED /* CollectionImg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEA7CEB2693E13000231AED /* CollectionImg.swift */; };
 		0AEA7CEF2693E17600231AED /* FriendsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEA7CEE2693E17600231AED /* FriendsTableViewController.swift */; };
@@ -46,6 +46,7 @@
 		0AC8C91326952AF500F4C28D /* UserCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UserCell.xib; sourceTree = "<group>"; };
 		0AC8C91F26952C1600F4C28D /* GroupCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GroupCell.xib; sourceTree = "<group>"; };
 		0AC8C92326952C5100F4C28D /* FriendPhoto.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FriendPhoto.xib; sourceTree = "<group>"; };
+		0AC8C9382695BF2900F4C28D /* SearchAllGroups.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchAllGroups.swift; sourceTree = "<group>"; };
 		0AEA7CAB2693DC9D00231AED /* VKapp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VKapp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0AEA7CAE2693DC9D00231AED /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0AEA7CB02693DC9D00231AED /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -61,7 +62,6 @@
 		0AEA7CDA2693DF8200231AED /* VkPhotos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VkPhotos.swift; sourceTree = "<group>"; };
 		0AEA7CDE2693DFC100231AED /* Friend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Friend.swift; sourceTree = "<group>"; };
 		0AEA7CE12693DFE000231AED /* Groups.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Groups.swift; sourceTree = "<group>"; };
-		0AEA7CE42693DFFB00231AED /* SearchGroups.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchGroups.swift; sourceTree = "<group>"; };
 		0AEA7CE82693E10F00231AED /* UserAvatarImg.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAvatarImg.swift; sourceTree = "<group>"; };
 		0AEA7CEB2693E13000231AED /* CollectionImg.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionImg.swift; sourceTree = "<group>"; };
 		0AEA7CEE2693E17600231AED /* FriendsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsTableViewController.swift; sourceTree = "<group>"; };
@@ -189,6 +189,7 @@
 			isa = PBXGroup;
 			children = (
 				0AEA7CDA2693DF8200231AED /* VkPhotos.swift */,
+				0AC8C9382695BF2900F4C28D /* SearchAllGroups.swift */,
 			);
 			path = VkModels;
 			sourceTree = "<group>";
@@ -198,7 +199,6 @@
 			children = (
 				0AEA7CDE2693DFC100231AED /* Friend.swift */,
 				0AEA7CE12693DFE000231AED /* Groups.swift */,
-				0AEA7CE42693DFFB00231AED /* SearchGroups.swift */,
 			);
 			path = RealmModels;
 			sourceTree = "<group>";
@@ -352,6 +352,7 @@
 				0AEA7CDB2693DF8200231AED /* VkPhotos.swift in Sources */,
 				0AEA7CF52693E2D500231AED /* NewsTableViewController.swift in Sources */,
 				0A1941D82693FE2D003CCD63 /* UserTableViewCell.swift in Sources */,
+				0AC8C9392695BF2900F4C28D /* SearchAllGroups.swift in Sources */,
 				0AEA7CE22693DFE000231AED /* Groups.swift in Sources */,
 				0AEA7CC62693DD8300231AED /* LoginViewController.swift in Sources */,
 				0AEA7CD22693DF1100231AED /* RealmService.swift in Sources */,
@@ -365,7 +366,6 @@
 				0AEA7CF82693E36200231AED /* PhotoCollectionViewController.swift in Sources */,
 				0AEA7CAF2693DC9D00231AED /* AppDelegate.swift in Sources */,
 				0AEA7CB12693DC9D00231AED /* SceneDelegate.swift in Sources */,
-				0AEA7CE52693DFFB00231AED /* SearchGroups.swift in Sources */,
 				0AEA7CFB2693E4B500231AED /* PhotoViewController.swift in Sources */,
 				0AEA7CEF2693E17600231AED /* FriendsTableViewController.swift in Sources */,
 			);

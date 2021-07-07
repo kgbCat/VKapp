@@ -82,7 +82,7 @@ class NetworkRequests {
     }
     }
 
-    func searchGroups(search q: String, completion: @escaping ([SearchGroups]?) -> Void) {
+    func searchGroups(search q: String, completion: @escaping ([SearchAllGroups]?) -> Void) {
         urlComponents.path = "/method/\(K.NetworkPaths.searchGroups)"
         urlComponents.queryItems?.append(contentsOf: [
             URLQueryItem(name: "q", value: q),
@@ -100,7 +100,7 @@ class NetworkRequests {
                     case .success(let data):
                         let json = JSON(data)
                         let usersJSONs = json["response"]["items"].arrayValue
-                        let vkGroups = usersJSONs.map { SearchGroups($0) }
+                        let vkGroups = usersJSONs.map { SearchAllGroups($0) }
                         DispatchQueue.main.async {
                             completion(vkGroups)
                             print(vkGroups)
