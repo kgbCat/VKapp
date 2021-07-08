@@ -20,7 +20,15 @@ class GroupsTableViewController: UITableViewController {
             let SearchGroupsController = segue.source as? SearchGroupsTableViewController,
             let indexPath = SearchGroupsController.tableView.indexPathForSelectedRow
         else { return }
-        let _ = SearchGroupsController.searchedGroups[indexPath.row]
+        let group = SearchGroupsController.searchedGroups[indexPath.row]
+        if group.groupSearchId != groups?.first?.groupId {
+            
+//            RealmService.save(items: group)
+
+            }
+//            print(group.groupSearchId)
+//            print(groups?.first?.groupId)
+        
             tableView.reloadData()
     }
     
