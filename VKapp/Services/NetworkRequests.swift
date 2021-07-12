@@ -167,6 +167,7 @@ class NetworkRequests {
 //                        let formatter = DateFormatter()
 //                        formatter.dateFormat = "y-MM-dd"
 //                        JSONDecoder().dateDecodingStrategy = .formatted(formatter)
+                        // PARALLEL PARSING OF ITEMS AND PROFILES
                         let decodedData = try JSONDecoder().decode(Main.self, from: data)
                         let items = decodedData.response.items
                         let profiles = decodedData.response.profiles
