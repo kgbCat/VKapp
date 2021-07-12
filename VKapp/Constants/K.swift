@@ -20,6 +20,7 @@ struct K {
         static let FriendsCell = "UserCell"
         static let FriendPhotoCell = "FriendPhoto"
         static let GroupCell = "GroupCell"
+        static let NewCell = "NewCell"
     }
     
     struct NetworkPaths {

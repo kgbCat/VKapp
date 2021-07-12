@@ -8,38 +8,73 @@
 import UIKit
 
 class NewsTableViewController: UITableViewController {
+    
+    private let networkService = NetworkRequests()
+    
+    private var items = [Items]() {
+        didSet {
+            tableView.reloadData()
+        }
+    }
+    private var profiles = [Profiles]() {
+        didSet {
+            tableView.reloadData()
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let nib = UINib(nibName: K.CellId.NewCell, bundle: nil)
+        tableView.register(nib, forCellReuseIdentifier: K.CellId.NewCell)
+        
+        networkService.getNews { [weak self] Items, Profiles in
+            guard
+                let self = self,
+                let items = Items,
+                let profiles = Profiles
+            else { return }
+            self.items = items
+            self.profiles = profiles
+            dump(items)
+            dump(profiles)
+        }
 
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
-
+   
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        return 0
+        return 1
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return 0
+        return items.count
     }
 
-    /*
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
+//
+//    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//
+//
+//        guard
+//            let cell = tableView.dequeueReusableCell(withIdentifier: K.CellId.NewCell, for: indexPath) as? NewsTableViewCell
+//        else { return UITableViewCell() }
+//        let currentItemNews = items[indexPath.row]
+//
+//        let attach = currentItemNews.attachments
+        
+//        let attach = currentItemNews.attachments
+//        }
+//        let currentProfile = profiles[indexPath.row]
+////        cell.configure(userImageUrl = profiles
+////        [0]?.photo.sizes[0]?.url
+////        cell.configure(newsImageUrl: photo, text: currentItemNews.text, date: currentItemNews.text)
 
-        // Configure the cell...
-
-        return cell
-    }
-    */
+//        return cell
+//
+//    }
+//   
 
     /*
     // Override to support conditional editing of the table view.

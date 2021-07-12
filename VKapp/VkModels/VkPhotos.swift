@@ -14,15 +14,7 @@ struct VkPhotoSize: Codable {
     var type: String
 //    var width: Int
 }
-//struct VkPhotoLikes: Codable {
-//    var user_likes: Int
-//    var count: Int
-//}
-//extension VkPhotoSize: Codable {
-//    enum CodingKeys: String, CodingKey {
-//        case url, type
-//    }
-//}
+
 
 extension VkPhotoSize {
     init(_ json: JSON) {
@@ -36,13 +28,6 @@ struct VkPhoto: Codable {
 //    var likes: VkPhotoLikes
     var owner_id: Int
 }
-//extension VkPhoto: Codable {
-//    enum CodingKeys: String, CodingKey {
-//        case owner_id = "owner_id"
-//        case sizes = "sizes"
-//    }
-//}
-
 extension VkPhoto {
     init(_ json: JSON) {
         self.owner_id = json["owner_id"].intValue
@@ -50,10 +35,10 @@ extension VkPhoto {
         self.sizes = sizes.map { VkPhotoSize($0) }
     }
 }
-struct PhotoResponse<T:Codable>: Codable {
-    var count: Int
-    var items: [T]
-}
-struct Photos1Response<T:Codable>: Codable {
-    let response: T
-}
+//struct PhotoResponse<T:Codable>: Codable {
+//    var count: Int
+//    var items: [T]
+//}
+//struct Photos1Response<T:Codable>: Codable {
+//    let response: T
+//}

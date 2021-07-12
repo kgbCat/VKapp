@@ -9,7 +9,7 @@ import UIKit
 
 class PhotoViewController: UIViewController {
     
-    var selectedData: VkPhoto?
+    var selectedData: VkPhoto? 
     
     @IBOutlet weak var photo: UIImageView!
         

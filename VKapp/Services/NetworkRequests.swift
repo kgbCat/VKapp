@@ -39,12 +39,14 @@ class NetworkRequests {
                 .responseData { response in
                     switch response.result {
                     case .success(let data):
-                        let json = JSON(data)
-                        let usersJSONs = json["response"]["items"].arrayValue
-                        let vkUsers = usersJSONs.map { Friend($0) }
-//                        print(vkUsers)
-                        DispatchQueue.main.async {
-                            completion(vkUsers)
+                        DispatchQueue.global().async {
+                            let json = JSON(data)
+                            let usersJSONs = json["response"]["items"].arrayValue
+                            let vkUsers = usersJSONs.map { Friend($0) }
+    //                        print(vkUsers)
+                            DispatchQueue.main.async {
+                                completion(vkUsers)
+                            }
                         }
                     case .failure(let error):
                         print(error)
@@ -68,11 +70,13 @@ class NetworkRequests {
                 .responseData { response in
                     switch response.result {
                     case .success(let data):
-                        let json = JSON(data)
-                        let usersJSONs = json["response"]["items"].arrayValue
-                        let vkGroups = usersJSONs.map { Groups($0) }
-                        DispatchQueue.main.async {
-                            completion(vkGroups)
+                        DispatchQueue.global().async {
+                            let json = JSON(data)
+                            let usersJSONs = json["response"]["items"].arrayValue
+                            let vkGroups = usersJSONs.map { Groups($0) }
+                            DispatchQueue.main.async {
+                                completion(vkGroups)
+                            }
                         }
                     case .failure(let error):
                         print(error)
@@ -98,12 +102,14 @@ class NetworkRequests {
                 .responseData { response in
                     switch response.result {
                     case .success(let data):
-                        let json = JSON(data)
-                        let usersJSONs = json["response"]["items"].arrayValue
-                        let vkGroups = usersJSONs.map { SearchAllGroups($0) }
-                        DispatchQueue.main.async {
-                            completion(vkGroups)
-                            print(vkGroups)
+                        DispatchQueue.global().async {
+                            let json = JSON(data)
+                            let usersJSONs = json["response"]["items"].arrayValue
+                            let vkGroups = usersJSONs.map { SearchAllGroups($0) }
+                            DispatchQueue.main.async {
+                                completion(vkGroups)
+                                print(vkGroups)
+                            }
                         }
                     case .failure(let error):
                         print(error)
@@ -127,11 +133,14 @@ class NetworkRequests {
                 .responseData { response in
                     switch response.result {
                     case .success(let data):
-                        let json = JSON(data)
-                        let photoJSONs = json["response"]["items"].arrayValue
-                        let vkUserPhoto = photoJSONs.map { VkPhoto($0) }
-                        completion(vkUserPhoto)
-//                        print(vkUserPhoto)
+                        DispatchQueue.global().async {
+                            let json = JSON(data)
+                            let photoJSONs = json["response"]["items"].arrayValue
+                            let vkUserPhoto = photoJSONs.map { VkPhoto($0) }
+                            DispatchQueue.main.async {
+                                completion(vkUserPhoto)
+                            }
+                        }
                     case .failure(let error):
                         print(error)
                         completion(nil)
@@ -139,5 +148,42 @@ class NetworkRequests {
                 }
         }
     }
+    func getNews(completion: @escaping ([Items]?, [Profiles]?) -> Void) {
+        urlComponents.path = "/method/newsfeed.get"
+        urlComponents.queryItems?.append(contentsOf: [
+            URLQueryItem(name: "filter", value: "post"),
+            URLQueryItem(name: "count", value: "3"),
+        ])
+        
+        if let url = urlComponents.url {
+            AF
+                .request(url)
+                .responseData { response in
+                    guard let data = response.value else { return }
+                    DispatchQueue.global().async {
+
+                       do {
+                       
+//                        let formatter = DateFormatter()
+//                        formatter.dateFormat = "y-MM-dd"
+//                        JSONDecoder().dateDecodingStrategy = .formatted(formatter)
+                        let decodedData = try JSONDecoder().decode(Main.self, from: data)
+                        let items = decodedData.response.items
+                        let profiles = decodedData.response.profiles
+                        DispatchQueue.main.async {
+                            completion(items, profiles)
+                        }
+                       
+                        
+                       } catch {
+                           print(error)
+                       }
+                    }
+                }
+        }
+        
+    }
+
+    
 }
     
