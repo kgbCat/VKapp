@@ -11,8 +11,11 @@ import RealmSwift
 class GroupsTableViewController: UITableViewController {
     
     private let networkService = NetworkRequests()
-    private let groups = try? RealmService.load(typeOf: Groups.self)
-    private var token: NotificationToken?
+    var groups = [MyGroups]() {
+        didSet {
+            tableView.reloadData()
+        }
+    }
 
     @IBAction func addGroup(segue: UIStoryboardSegue) {
         guard
@@ -21,14 +24,8 @@ class GroupsTableViewController: UITableViewController {
             let indexPath = SearchGroupsController.tableView.indexPathForSelectedRow
         else { return }
         let group = SearchGroupsController.searchedGroups[indexPath.row]
-        if group.groupSearchId != groups?.first?.groupId {
-            
-//            RealmService.save(items: group)
+        groups.append(group)
 
-            }
-//            print(group.groupSearchId)
-//            print(groups?.first?.groupId)
-        
             tableView.reloadData()
     }
     
@@ -37,44 +34,48 @@ class GroupsTableViewController: UITableViewController {
 
         let nib = UINib(nibName: K.CellId.GroupCell, bundle: nil)
         tableView.register(nib, forCellReuseIdentifier: K.CellId.GroupCell)
-        observeRealm()
+    
         //fetch groups from the account
-        networkService.getGroup { vkGroups in
-            guard let groups = vkGroups else { return }
-            do {
-                try RealmService.save(items: groups)
-            } catch {
-                print(error)
-            }
+        networkService.getGroup { [weak self] vkGroups in
+            guard
+                let self = self,
+                let groups = vkGroups
+            else { return }
+            self.groups = groups
         }
-    }
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
         
+ 
     }
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        token?.invalidate()
-    }
+ 
 
     // MARK: - Table view data source
 
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
      
-        return groups?.count ?? 0
+        return groups.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         guard
-            let cell = tableView.dequeueReusableCell(withIdentifier: K.CellId.GroupCell, for: indexPath) as? GroupTableViewCell,
-            let currentGroup = groups?[indexPath.row]
+            let cell = tableView.dequeueReusableCell(withIdentifier: K.CellId.GroupCell, for: indexPath) as? GroupTableViewCell
         else { return UITableViewCell() }
-             
+    
+        let currentGroup = groups[indexPath.row]
+       
         cell.configure(name: currentGroup.name, imageURL: currentGroup.photo)
 
         return cell
     }
+    
+    
+//    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+//        let headerView = TableSectionHeaderView()
+//        headerView.configure(with: "MY GROUPS")
+//
+//        return headerView
+//    }
 
 
     /*
@@ -122,20 +123,4 @@ class GroupsTableViewController: UITableViewController {
     }
     */
 
-}
-extension GroupsTableViewController {
-    
-    private func observeRealm() {
-        token = groups?.observe({ changes in
-            switch changes {
-            case .initial( _):
-                self.tableView.reloadData()
-            case let .update(results, deletions, insertions, modifications):
-                print(results, deletions, insertions, modifications)
-                self.tableView.reloadData()
-            case .error(let error):
-                print(error)
-            }
-        })
-    }
 }

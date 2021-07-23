@@ -7,10 +7,18 @@
 
 import UIKit
 import RealmSwift
+import PromiseKit
 
 class FriendsTableViewController: UITableViewController, UISearchBarDelegate {
     private let networkService = NetworkRequests()
     private let users = try? RealmService.load(typeOf: Friend.self).filter("firstName != 'DELETED' AND userAvatarURL != 'https://vk.com/images/deactivated_200.png'").sorted(byKeyPath: "firstName")
+
+
+
+    private let photoService: PhotoService = {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        return appDelegate?.photoService ?? PhotoService()
+    }()
     
     var searchFriends: Results<Friend>?
     
@@ -20,23 +28,36 @@ class FriendsTableViewController: UITableViewController, UISearchBarDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-            
-        observeRealm()
         
+        observeRealm()
         let nib = UINib(nibName: K.CellId.FriendsCell, bundle: nil)
         tableView.register(nib, forCellReuseIdentifier: K.CellId.FriendsCell)
-        
         searchBar.delegate = self
         searchBar.backgroundColor = .clear
-        
-        networkService.getFriends { vkFriends in
-            guard let friends = vkFriends else { return }
-            do {
-                try RealmService.save(items: friends)
-            } catch {
+        // PromiseKit
+        networkService.getUserFriendsPromise()
+            .thenMap(on: .global()) { (json) in
+                return Promise.value(Friend(json))
+            }
+            .done {realmUsers in
+                do {
+                    try RealmService.save(items: realmUsers)
+                } catch {
+                    print(error)
+                }
+            }
+            .catch { (error) in
                 print(error)
             }
-        }
+        
+//        networkService.getFriends { vkFriends in
+//            guard let friends = vkFriends else { return }
+//            do {
+//                try RealmService.save(items: friends)
+//            } catch {
+//                print(error)
+//            }
+//        }
         
         searchFriends = users
     }
@@ -63,7 +84,8 @@ class FriendsTableViewController: UITableViewController, UISearchBarDelegate {
         
         cell.configure(
             name: currentFriend.fullName,
-            imageURL: currentFriend.userAvatarURL
+            imageURL: currentFriend.userAvatarURL,
+            photoService: photoService
             )
 
         return cell
@@ -77,12 +99,7 @@ class FriendsTableViewController: UITableViewController, UISearchBarDelegate {
     }
     */
 
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-//             Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-    }
-    }
+
     // MARK SEARCH BAR
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchBar.text == "" {
@@ -115,7 +132,7 @@ class FriendsTableViewController: UITableViewController, UISearchBarDelegate {
     */
 
 
-    // MARK: - Navigation
+    // MARK: - TableView Delegate Methods
 
      override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
          defer { tableView.deselectRow(at: indexPath, animated: true) }
