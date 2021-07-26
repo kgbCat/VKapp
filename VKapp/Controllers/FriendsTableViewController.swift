@@ -7,12 +7,10 @@
 
 import UIKit
 import RealmSwift
-import PromiseKit
 
 class FriendsTableViewController: UITableViewController, UISearchBarDelegate {
     private let networkService = NetworkRequests()
     private let users = try? RealmService.load(typeOf: Friend.self).filter("firstName != 'DELETED' AND userAvatarURL != 'https://vk.com/images/deactivated_200.png'").sorted(byKeyPath: "firstName")
-
 
 
     private let photoService: PhotoService = {
@@ -34,30 +32,15 @@ class FriendsTableViewController: UITableViewController, UISearchBarDelegate {
         tableView.register(nib, forCellReuseIdentifier: K.CellId.FriendsCell)
         searchBar.delegate = self
         searchBar.backgroundColor = .clear
-        // PromiseKit
-        networkService.getUserFriendsPromise()
-            .thenMap(on: .global()) { (json) in
-                return Promise.value(Friend(json))
-            }
-            .done {realmUsers in
-                do {
-                    try RealmService.save(items: realmUsers)
-                } catch {
-                    print(error)
-                }
-            }
-            .catch { (error) in
+        
+        networkService.getFriends { vkFriends in
+            guard let friends = vkFriends else { return }
+            do {
+                try RealmService.save(items: friends)
+            } catch {
                 print(error)
             }
-        
-//        networkService.getFriends { vkFriends in
-//            guard let friends = vkFriends else { return }
-//            do {
-//                try RealmService.save(items: friends)
-//            } catch {
-//                print(error)
-//            }
-//        }
+        }
         
         searchFriends = users
     }
@@ -145,16 +128,14 @@ class FriendsTableViewController: UITableViewController, UISearchBarDelegate {
         if let
             destination = segue.destination as? PhotoCollectionViewController,
            let index = tableView.indexPathForSelectedRow?.row {
-            destination.userID = users?[index].id
-//            print(users?[index].id ?? 0)
-
+            destination.userID = searchFriends?[index].id
         }
     }
 }
 
 extension FriendsTableViewController {
     private func observeRealm() {
-        token = users?.observe({ changes in
+        token = searchFriends?.observe({ changes in
             switch changes {
             case .initial( _):
                 self.tableView.reloadData()

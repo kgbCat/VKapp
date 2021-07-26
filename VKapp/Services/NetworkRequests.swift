@@ -9,7 +9,6 @@ import Foundation
 import Alamofire
 import SwiftyJSON
 import RealmSwift
-import PromiseKit
 
 
 class NetworkRequests {
@@ -26,39 +25,7 @@ class NetworkRequests {
         return url
     }()
     
-//    func getFriends(completion: @escaping ([Friend]?) -> Void) {
-//        urlComponents.path = "/method/\(K.NetworkPaths.getFriends)"
-//        urlComponents.queryItems?.append(contentsOf: [
-//            URLQueryItem(name: "order", value: "random"),
-//            URLQueryItem(name: "offset", value: "5"),
-//            URLQueryItem(name: "fields", value: "photo_200_orig"),
-////            URLQueryItem(name: "count", value: "50"),
-//                ])
-//        if let url = urlComponents.url {
-//            AF
-//                .request(url)
-//                .responseData { response in
-//                    switch response.result {
-//                    case .success(let data):
-//                        DispatchQueue.global().async {
-//                            let json = JSON(data)
-//                            let usersJSONs = json["response"]["items"].arrayValue
-//                            let vkUsers = usersJSONs.map { Friend($0) }
-//    //                        print(vkUsers)
-//                            DispatchQueue.main.async {
-//                                completion(vkUsers)
-//                            }
-//                        }
-//                    case .failure(let error):
-//                        print(error)
-//                        completion(nil)
-//                    }
-//                }
-//        }
-//
-//    }
-    // PromiseKit
-    func getUserFriendsPromise() -> Promise<[JSON]> {
+    func getFriends(completion: @escaping ([Friend]?) -> Void) {
         urlComponents.path = "/method/\(K.NetworkPaths.getFriends)"
         urlComponents.queryItems?.append(contentsOf: [
             URLQueryItem(name: "order", value: "random"),
@@ -66,23 +33,28 @@ class NetworkRequests {
             URLQueryItem(name: "fields", value: "photo_200_orig"),
 //            URLQueryItem(name: "count", value: "50"),
                 ])
-        
-        return Promise { seal in
-            if let url = urlComponents.url {
-                AF
-                    .request(url)
-                    .responseData { response in
-                        switch response.result {
-                        case .success(let data):
+        if let url = urlComponents.url {
+            AF
+                .request(url)
+                .responseData { response in
+                    switch response.result {
+                    case .success(let data):
+                        DispatchQueue.global().async {
                             let json = JSON(data)
-                            seal.fulfill(json["response"]["items"].arrayValue)
-
-                        case .failure(let error):
-                            seal.reject(error)
+                            let usersJSONs = json["response"]["items"].arrayValue
+                            let vkUsers = usersJSONs.map { Friend($0) }
+    //                        print(vkUsers)
+                            DispatchQueue.main.async {
+                                completion(vkUsers)
+                            }
                         }
+                    case .failure(let error):
+                        print(error)
+                        completion(nil)
                     }
-            }
+                }
         }
+
     }
 
     func getGroup(completion: @escaping ([MyGroups]?) -> Void) {
@@ -176,26 +148,7 @@ class NetworkRequests {
                 }
         }
     }
-//    func parsing() {
-//        urlComponents.path = "/method/newsfeed.get"
-//        urlComponents.queryItems?.append(contentsOf: [
-//            URLQueryItem(name: "filter", value: "post"),
-//            URLQueryItem(name: "count", value: "1"),
-//        ])
-//        guard let url = urlComponents.url else { return }
-//        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
-//            guard let dataResponse = data else {
-//                return
-//            }
-//            do {
-//                let modelData = try JSONDecoder().decode(Main<Response>.self, from: dataResponse)
-//                print(modelData)
-//            } catch {
-//
-//            }
-//        }
-//        task.resume()
-//    }
+
     func getNews(completion: @escaping ([Items]?, [Profiles]?) -> Void) {
         urlComponents.path = "/method/newsfeed.get"
         urlComponents.queryItems?.append(contentsOf: [
