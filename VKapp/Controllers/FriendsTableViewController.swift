@@ -11,6 +11,12 @@ import RealmSwift
 class FriendsTableViewController: UITableViewController, UISearchBarDelegate {
     private let networkService = NetworkRequests()
     private let users = try? RealmService.load(typeOf: Friend.self).filter("firstName != 'DELETED' AND userAvatarURL != 'https://vk.com/images/deactivated_200.png'").sorted(byKeyPath: "firstName")
+
+
+    private let photoService: PhotoService = {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        return appDelegate?.photoService ?? PhotoService()
+    }()
     
     var searchFriends: Results<Friend>?
     
@@ -20,12 +26,10 @@ class FriendsTableViewController: UITableViewController, UISearchBarDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-            
-        observeRealm()
         
+        observeRealm()
         let nib = UINib(nibName: K.CellId.FriendsCell, bundle: nil)
         tableView.register(nib, forCellReuseIdentifier: K.CellId.FriendsCell)
-        
         searchBar.delegate = self
         searchBar.backgroundColor = .clear
         
@@ -63,7 +67,8 @@ class FriendsTableViewController: UITableViewController, UISearchBarDelegate {
         
         cell.configure(
             name: currentFriend.fullName,
-            imageURL: currentFriend.userAvatarURL
+            imageURL: currentFriend.userAvatarURL,
+            photoService: photoService
             )
 
         return cell
@@ -77,12 +82,7 @@ class FriendsTableViewController: UITableViewController, UISearchBarDelegate {
     }
     */
 
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-//             Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-    }
-    }
+
     // MARK SEARCH BAR
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchBar.text == "" {
@@ -115,7 +115,7 @@ class FriendsTableViewController: UITableViewController, UISearchBarDelegate {
     */
 
 
-    // MARK: - Navigation
+    // MARK: - TableView Delegate Methods
 
      override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
          defer { tableView.deselectRow(at: indexPath, animated: true) }
@@ -128,16 +128,14 @@ class FriendsTableViewController: UITableViewController, UISearchBarDelegate {
         if let
             destination = segue.destination as? PhotoCollectionViewController,
            let index = tableView.indexPathForSelectedRow?.row {
-            destination.userID = users?[index].id
-//            print(users?[index].id ?? 0)
-
+            destination.userID = searchFriends?[index].id
         }
     }
 }
 
 extension FriendsTableViewController {
     private func observeRealm() {
-        token = users?.observe({ changes in
+        token = searchFriends?.observe({ changes in
             switch changes {
             case .initial( _):
                 self.tableView.reloadData()

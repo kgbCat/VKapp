@@ -57,7 +57,7 @@ class NetworkRequests {
 
     }
 
-    func getGroup(completion: @escaping ([Groups]?) -> Void) {
+    func getGroup(completion: @escaping ([MyGroups]?) -> Void) {
         urlComponents.path = "/method/\(K.NetworkPaths.getGroups)"
         urlComponents.queryItems?.append(contentsOf: [
             URLQueryItem(name: "extended", value: "1"),
@@ -73,7 +73,7 @@ class NetworkRequests {
                         DispatchQueue.global().async {
                             let json = JSON(data)
                             let usersJSONs = json["response"]["items"].arrayValue
-                            let vkGroups = usersJSONs.map { Groups($0) }
+                            let vkGroups = usersJSONs.map { MyGroups($0) }
                             DispatchQueue.main.async {
                                 completion(vkGroups)
                             }
@@ -86,7 +86,7 @@ class NetworkRequests {
     }
     }
 
-    func searchGroups(search q: String, completion: @escaping ([SearchAllGroups]?) -> Void) {
+    func searchGroups(search q: String, completion: @escaping ([MyGroups]?) -> Void) {
         urlComponents.path = "/method/\(K.NetworkPaths.searchGroups)"
         urlComponents.queryItems?.append(contentsOf: [
             URLQueryItem(name: "q", value: q),
@@ -105,7 +105,7 @@ class NetworkRequests {
                         DispatchQueue.global().async {
                             let json = JSON(data)
                             let usersJSONs = json["response"]["items"].arrayValue
-                            let vkGroups = usersJSONs.map { SearchAllGroups($0) }
+                            let vkGroups = usersJSONs.map { MyGroups($0) }
                             DispatchQueue.main.async {
                                 completion(vkGroups)
                                 print(vkGroups)
@@ -148,13 +148,14 @@ class NetworkRequests {
                 }
         }
     }
+
     func getNews(completion: @escaping ([Items]?, [Profiles]?) -> Void) {
         urlComponents.path = "/method/newsfeed.get"
         urlComponents.queryItems?.append(contentsOf: [
             URLQueryItem(name: "filter", value: "post"),
-            URLQueryItem(name: "count", value: "3"),
+            URLQueryItem(name: "count", value: "1"),
         ])
-        
+
         if let url = urlComponents.url {
             AF
                 .request(url)
@@ -163,26 +164,33 @@ class NetworkRequests {
                     DispatchQueue.global().async {
 
                        do {
-                       
-//                        let formatter = DateFormatter()
-//                        formatter.dateFormat = "y-MM-dd"
-//                        JSONDecoder().dateDecodingStrategy = .formatted(formatter)
+
+                        // PARALLEL PARSING OF ITEMS AND PROFILES
                         let decodedData = try JSONDecoder().decode(Main.self, from: data)
                         let items = decodedData.response.items
+                        print(items)
                         let profiles = decodedData.response.profiles
+                        print(profiles)
+
+                         let formatter = DateFormatter()
+                         formatter.dateFormat = "y-MM-dd"
+                         JSONDecoder().dateDecodingStrategy = .formatted(formatter)
                         DispatchQueue.main.async {
                             completion(items, profiles)
                         }
-                       
-                        
+
                        } catch {
                            print(error)
                        }
                     }
                 }
         }
-        
+
     }
+    
+    
+    
+
 
     
 }

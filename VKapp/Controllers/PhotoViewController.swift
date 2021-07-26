@@ -15,6 +15,10 @@ class PhotoViewController: UIViewController {
         
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        navigationController?.navigationItem.backButtonDisplayMode = .minimal
+        navigationItem.backBarButtonItem?.tintColor = .white
+
         if let url = selectedData?.sizes.first(where: { ("x").contains($0.type)})?.url{
             print(url)
             photo.kf.setImage(with: URL(string: url))

@@ -6,13 +6,12 @@
 //
 
 import UIKit
-import RealmSwift
 
 
 class SearchGroupsTableViewController: UITableViewController, UISearchBarDelegate {
     private let networkService = NetworkRequests()
 
-     var searchedGroups = [SearchAllGroups]() {
+     var searchedGroups = [MyGroups]() {
         didSet {
             tableView.reloadData()
         }
@@ -24,9 +23,11 @@ class SearchGroupsTableViewController: UITableViewController, UISearchBarDelegat
         super.viewDidLoad()
         searchBar.delegate = self
         searchBar.backgroundColor = .clear
-
+        navigationItem.backBarButtonItem = .none
+        navigationItem.backBarButtonItem?.tintColor = .white
         let nib = UINib(nibName: K.CellId.GroupCell, bundle: nil)
         tableView.register(nib, forCellReuseIdentifier: K.CellId.GroupCell)
+
 
     }
         
@@ -40,15 +41,17 @@ class SearchGroupsTableViewController: UITableViewController, UISearchBarDelegat
                 else {return}
                 self.searchedGroups = groups
             }
+            
+            searchBar.backgroundColor = UIColor(.yellow)
       
             tableView.reloadData()
         }
     }
           
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.text = ""
-        tableView.reloadData()
-    }
+//    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+//        searchBar.text = ""
+//        tableView.reloadData()
+//    }
 
     // MARK: - Table view data source
 
@@ -62,7 +65,6 @@ class SearchGroupsTableViewController: UITableViewController, UISearchBarDelegat
         guard
             let cell = tableView.dequeueReusableCell(withIdentifier: K.CellId.GroupCell, for: indexPath) as? GroupTableViewCell
         else { return UITableViewCell() }
-        
         let currentGroup = searchedGroups[indexPath.row]
         cell.configure(
             name: currentGroup.name,
@@ -78,5 +80,6 @@ class SearchGroupsTableViewController: UITableViewController, UISearchBarDelegat
         
     }
     
-
+    
+  
 }

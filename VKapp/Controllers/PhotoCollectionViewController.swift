@@ -9,6 +9,11 @@ import UIKit
 
 class PhotoCollectionViewController: UICollectionViewController {
     
+    private let photoService: PhotoService = {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        return appDelegate?.photoService ?? PhotoService()
+    }()
+    
     private let networkService = NetworkRequests()
     private var photos = [VkPhoto]() {
         didSet {
@@ -20,7 +25,7 @@ class PhotoCollectionViewController: UICollectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         // "FriendPhoto" Register
          let cellNib = UINib(
              nibName: K.CellId.FriendPhotoCell,
@@ -74,7 +79,12 @@ class PhotoCollectionViewController: UICollectionViewController {
         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: K.CellId.FriendPhotoCell, for: indexPath) as? PhotoCollectionViewCell
             else { return UICollectionViewCell() }
-        cell.configure(imageURL: photos[indexPath.row] .sizes.first(where: { ("x").contains($0.type) })?.url ?? "")
+        let photo = photos[indexPath.row]
+        print(photo)
+        let likes = photo.likes.count
+        cell.configure(
+            imageURL: photo.sizes.first(where: { ("x").contains($0.type) })?.url ?? "",
+            likes: likes, photoService: photoService )
     
     return cell
 }

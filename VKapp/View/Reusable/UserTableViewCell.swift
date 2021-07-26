@@ -10,13 +10,19 @@ import Kingfisher
 
 class UserTableViewCell: UITableViewCell {
 
+
     @IBOutlet weak var userAvatarImg: UserAvatarImg!
     @IBOutlet weak var userName: UILabel!
     
     
-    func configure(name: String, imageURL: String) {
+    func configure(name: String, imageURL: String, photoService: PhotoService) {
         userAvatarImg.kf.setImage(with: URL(string: imageURL))
         userName.text = name
+        photoService.getImage(urlString: imageURL) { [weak self] image in
+            DispatchQueue.main.async {
+                self?.userAvatarImg.image = image
+            }
+        }
         
     }
     
