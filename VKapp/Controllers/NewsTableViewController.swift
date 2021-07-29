@@ -26,27 +26,10 @@ class NewsTableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-    // register nib for NewsCellProfile
-        let nib1 = UINib(nibName: K.CellId.NewsCellProfile, bundle: nil)
-        tableView.register(nib1, forCellReuseIdentifier: K.CellId.NewsCellProfile)
-    // register nib for NewsCellItem
-        let nib2 = UINib(nibName: K.CellId.NewsCellItem, bundle: nil)
-        tableView.register(nib2, forCellReuseIdentifier: K.CellId.NewsCellItem)
-    // get data
-        networkService.getNews { [weak self] Items, Profiles in
-            guard
-                let self = self,
-                let items = Items,
-                let profiles = Profiles
-            else { return }
-            self.items = items
-            self.profiles = profiles
-            dump(items)
-            dump(profiles)
-
-        }
+        makeRefreshControl()
+        registerNib()
+        getNews()
         
-       
         for profile in profiles {
             idProfile.append(profile.id)
         }
@@ -59,7 +42,7 @@ class NewsTableViewController: UITableViewController {
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
+
         return 1
     }
 
@@ -67,13 +50,11 @@ class NewsTableViewController: UITableViewController {
         return items.count + profiles.count
     }
 
-
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = UITableViewCell()
-        
   
-        if indexPath.row == 0{
+        if indexPath.row == 0 {
             // register profileCell
             guard let cell = (tableView.dequeueReusableCell(withIdentifier: K.CellId.NewsCellProfile, for: indexPath) as? NewsCellProfile)
             else { return UITableViewCell() }
@@ -114,51 +95,34 @@ class NewsTableViewController: UITableViewController {
         return cell
     }
 
-   
-
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
+}
+extension NewsTableViewController {
+    private func registerNib() {
+        // register nib for NewsCellProfile
+            let nib1 = UINib(nibName: K.CellId.NewsCellProfile, bundle: nil)
+            tableView.register(nib1, forCellReuseIdentifier: K.CellId.NewsCellProfile)
+        // register nib for NewsCellItem
+            let nib2 = UINib(nibName: K.CellId.NewsCellItem, bundle: nil)
+            tableView.register(nib2, forCellReuseIdentifier: K.CellId.NewsCellItem)
     }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
+    
+    private func makeRefreshControl(){
+        tableView.refreshControl = UIRefreshControl()
+        tableView.refreshControl?.addTarget(self, action: #selector(refresh), for: .valueChanged)
     }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
+    @objc private func refresh() {
+        getNews()
     }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
+    
+    private func getNews() {
+        networkService.getNews { [weak self] Items, Profiles in
+            guard
+                let self = self,
+                let items = Items,
+                let profiles = Profiles
+            else { return }
+            self.items = items
+            self.profiles = profiles
+        }
     }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
