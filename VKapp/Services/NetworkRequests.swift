@@ -19,7 +19,7 @@ class NetworkRequests {
         url.host = "api.vk.com"
         url.queryItems = [
             URLQueryItem(name: "access_token", value: Session.instance.token),
-            URLQueryItem(name: "v", value: "5.132"),
+            URLQueryItem(name: "v", value: "5.131"),
             URLQueryItem(name: "user_id", value: String(Session.instance.userId))
         ]
         return url
@@ -39,15 +39,12 @@ class NetworkRequests {
                 .responseData { response in
                     switch response.result {
                     case .success(let data):
-                        DispatchQueue.global().async {
-                            let json = JSON(data)
-                            let usersJSONs = json["response"]["items"].arrayValue
-                            let vkUsers = usersJSONs.map { Friend($0) }
-    //                        print(vkUsers)
-                            DispatchQueue.main.async {
-                                completion(vkUsers)
-                            }
-                        }
+                       
+                        let json = JSON(data)
+                        let usersJSONs = json["response"]["items"].arrayValue
+                        let vkUsers = usersJSONs.map { Friend($0) }
+                        completion(vkUsers)
+                        
                     case .failure(let error):
                         print(error)
                         completion(nil)
@@ -153,7 +150,7 @@ class NetworkRequests {
         urlComponents.path = "/method/newsfeed.get"
         urlComponents.queryItems?.append(contentsOf: [
             URLQueryItem(name: "filter", value: "post"),
-            URLQueryItem(name: "count", value: "1"),
+            URLQueryItem(name: "count", value: "40"),
         ])
 
         if let url = urlComponents.url {
@@ -168,15 +165,25 @@ class NetworkRequests {
                         // PARALLEL PARSING OF ITEMS AND PROFILES
                         let decodedData = try JSONDecoder().decode(Main.self, from: data)
                         let items = decodedData.response.items
-                        print(items)
+                        var itemsChecked = [Items]()
+                        var idArr = [Int]()
+                        for (item) in items {
+                            if !item.attachments.isEmpty {
+                                idArr.append(item.source_id)
+                                itemsChecked.append(item)
+                            }
+                        }
+                  
                         let profiles = decodedData.response.profiles
-                        print(profiles)
+                        var profilesChecked = [Profiles]()
+                        for profile in profiles {
+                            if idArr.contains(profile.id) {
+                                profilesChecked.append(profile)
+                            }
+                        }
 
-                         let formatter = DateFormatter()
-                         formatter.dateFormat = "y-MM-dd"
-                         JSONDecoder().dateDecodingStrategy = .formatted(formatter)
                         DispatchQueue.main.async {
-                            completion(items, profiles)
+                            completion(itemsChecked, profilesChecked)
                         }
 
                        } catch {
@@ -187,11 +194,6 @@ class NetworkRequests {
         }
 
     }
-    
-    
-    
-
-
-    
+      
 }
     

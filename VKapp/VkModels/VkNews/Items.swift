@@ -6,7 +6,17 @@
 //
 
 import Foundation
-struct Items: Codable {
+struct Items: Codable, Comparable {
+    static func < (lhs: Items, rhs: Items) -> Bool {
+        return lhs.source_id < rhs.source_id
+
+    }
+    
+    static func == (lhs: Items, rhs: Items) -> Bool {
+        return lhs.source_id == rhs.source_id
+
+    }
+    
     let source_id: Int
     let date: Int
     let text:String

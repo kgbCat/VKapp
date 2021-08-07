@@ -25,6 +25,8 @@ class PhotoCollectionViewController: UICollectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.title = "Photos"
+        navigationController?.navigationBar.prefersLargeTitles = true
         makeRefreshControl()
         getPhotos()
         registerCellNib()

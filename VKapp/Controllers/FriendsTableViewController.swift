@@ -26,11 +26,14 @@ class FriendsTableViewController: UITableViewController, UISearchBarDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    
         registerNib()
         makeRefreshControl()
         observeRealm()
         getUsers()
 //        configPrefetch()
+        navigationController?.title = "Friends"
+        navigationController?.navigationBar.prefersLargeTitles = true
         searchBar.delegate = self
         searchBar.backgroundColor = .clear
         searchFriends = users

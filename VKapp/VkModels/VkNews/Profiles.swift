@@ -6,7 +6,12 @@
 //
 
 import Foundation
-struct Profiles: Codable {
+struct Profiles: Codable, Comparable, Hashable {
+    static func < (lhs: Profiles, rhs: Profiles) -> Bool {
+        return lhs.id < rhs.id
+
+    }
+    
     let first_name: String
     let last_name: String
     let id: Int
