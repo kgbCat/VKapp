@@ -21,18 +21,32 @@ class UserAvatarImg: UIImageView {
     }
 }
 
-class AvatarBackShadow: UIView {
-    @IBInspectable var shadowColor: UIColor = .clear
-    @IBInspectable var shadowOffset: CGSize = CGSize(width: 0.0, height: -3)
-    @IBInspectable var shadowOpacity: Float = 0.8
-    @IBInspectable var shadowRadius: CGFloat = 3
-    
-    override func awakeFromNib() {
-        self.backgroundColor = .clear
-        self.layer.shadowColor = shadowColor.cgColor
-        self.layer.shadowOffset = shadowOffset
-        self.layer.shadowOpacity = shadowOpacity
-        self.layer.shadowRadius = shadowRadius
-    }
-}
+//class AvatarBackShadow: UIView {
+//    @IBInspectable var shadowColor: UIColor = .clear
+//    @IBInspectable var shadowOffset: CGSize = CGSize(width: 0.0, height: -3)
+//    @IBInspectable var shadowOpacity: Float = 0.8
+//    @IBInspectable var shadowRadius: CGFloat = 3
+//    
+//    override func awakeFromNib() {
+//        self.backgroundColor = .clear
+//        self.layer.shadowColor = shadowColor.cgColor
+//        self.layer.shadowOffset = shadowOffset
+//        self.layer.shadowOpacity = shadowOpacity
+//        self.layer.shadowRadius = shadowRadius
+//    }
+//}
 
+
+//class CollectionImg: UIImageView {
+//    @IBInspectable var borderColor: UIColor = .darkGray
+//    @IBInspectable var borderWidth: CGFloat = 1.5
+//
+//
+//    override func awakeFromNib() {
+////        self.layer.masksToBounds = true
+//        self.layer.borderWidth = borderWidth
+//        self.layer.borderColor = borderColor.cgColor
+//
+////        self.backgroundColor = .clear
+//    }
+//}

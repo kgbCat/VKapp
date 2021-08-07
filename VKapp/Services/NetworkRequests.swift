@@ -9,6 +9,7 @@ import Foundation
 import Alamofire
 import SwiftyJSON
 import RealmSwift
+import PromiseKit
 
 
 class NetworkRequests {
@@ -25,7 +26,39 @@ class NetworkRequests {
         return url
     }()
     
-    func getFriends(completion: @escaping ([Friend]?) -> Void) {
+//    func getFriends(completion: @escaping ([Friend]?) -> Void) {
+//        urlComponents.path = "/method/\(K.NetworkPaths.getFriends)"
+//        urlComponents.queryItems?.append(contentsOf: [
+//            URLQueryItem(name: "order", value: "random"),
+//            URLQueryItem(name: "offset", value: "5"),
+//            URLQueryItem(name: "fields", value: "photo_200_orig"),
+////            URLQueryItem(name: "count", value: "50"),
+//                ])
+//        if let url = urlComponents.url {
+//            AF
+//                .request(url)
+//                .responseData { response in
+//                    switch response.result {
+//                    case .success(let data):
+//                        DispatchQueue.global().async {
+//                            let json = JSON(data)
+//                            let usersJSONs = json["response"]["items"].arrayValue
+//                            let vkUsers = usersJSONs.map { Friend($0) }
+//    //                        print(vkUsers)
+//                            DispatchQueue.main.async {
+//                                completion(vkUsers)
+//                            }
+//                        }
+//                    case .failure(let error):
+//                        print(error)
+//                        completion(nil)
+//                    }
+//                }
+//        }
+//
+//    }
+    // PromiseKit
+    func getUserFriendsPromise() -> Promise<[JSON]> {
         urlComponents.path = "/method/\(K.NetworkPaths.getFriends)"
         urlComponents.queryItems?.append(contentsOf: [
             URLQueryItem(name: "order", value: "random"),
@@ -33,31 +66,26 @@ class NetworkRequests {
             URLQueryItem(name: "fields", value: "photo_200_orig"),
 //            URLQueryItem(name: "count", value: "50"),
                 ])
-        if let url = urlComponents.url {
-            AF
-                .request(url)
-                .responseData { response in
-                    switch response.result {
-                    case .success(let data):
-                        DispatchQueue.global().async {
+        
+        return Promise { seal in
+            if let url = urlComponents.url {
+                AF
+                    .request(url)
+                    .responseData { response in
+                        switch response.result {
+                        case .success(let data):
                             let json = JSON(data)
-                            let usersJSONs = json["response"]["items"].arrayValue
-                            let vkUsers = usersJSONs.map { Friend($0) }
-    //                        print(vkUsers)
-                            DispatchQueue.main.async {
-                                completion(vkUsers)
-                            }
-                        }
-                    case .failure(let error):
-                        print(error)
-                        completion(nil)
-                    }
-                }
-        }
+                            seal.fulfill(json["response"]["items"].arrayValue)
 
+                        case .failure(let error):
+                            seal.reject(error)
+                        }
+                    }
+            }
+        }
     }
 
-    func getGroup(completion: @escaping ([Groups]?) -> Void) {
+    func getGroup(completion: @escaping ([MyGroups]?) -> Void) {
         urlComponents.path = "/method/\(K.NetworkPaths.getGroups)"
         urlComponents.queryItems?.append(contentsOf: [
             URLQueryItem(name: "extended", value: "1"),
@@ -73,7 +101,7 @@ class NetworkRequests {
                         DispatchQueue.global().async {
                             let json = JSON(data)
                             let usersJSONs = json["response"]["items"].arrayValue
-                            let vkGroups = usersJSONs.map { Groups($0) }
+                            let vkGroups = usersJSONs.map { MyGroups($0) }
                             DispatchQueue.main.async {
                                 completion(vkGroups)
                             }
@@ -86,7 +114,7 @@ class NetworkRequests {
     }
     }
 
-    func searchGroups(search q: String, completion: @escaping ([SearchAllGroups]?) -> Void) {
+    func searchGroups(search q: String, completion: @escaping ([MyGroups]?) -> Void) {
         urlComponents.path = "/method/\(K.NetworkPaths.searchGroups)"
         urlComponents.queryItems?.append(contentsOf: [
             URLQueryItem(name: "q", value: q),
@@ -105,7 +133,7 @@ class NetworkRequests {
                         DispatchQueue.global().async {
                             let json = JSON(data)
                             let usersJSONs = json["response"]["items"].arrayValue
-                            let vkGroups = usersJSONs.map { SearchAllGroups($0) }
+                            let vkGroups = usersJSONs.map { MyGroups($0) }
                             DispatchQueue.main.async {
                                 completion(vkGroups)
                                 print(vkGroups)
@@ -148,13 +176,33 @@ class NetworkRequests {
                 }
         }
     }
+//    func parsing() {
+//        urlComponents.path = "/method/newsfeed.get"
+//        urlComponents.queryItems?.append(contentsOf: [
+//            URLQueryItem(name: "filter", value: "post"),
+//            URLQueryItem(name: "count", value: "1"),
+//        ])
+//        guard let url = urlComponents.url else { return }
+//        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+//            guard let dataResponse = data else {
+//                return
+//            }
+//            do {
+//                let modelData = try JSONDecoder().decode(Main<Response>.self, from: dataResponse)
+//                print(modelData)
+//            } catch {
+//
+//            }
+//        }
+//        task.resume()
+//    }
     func getNews(completion: @escaping ([Items]?, [Profiles]?) -> Void) {
         urlComponents.path = "/method/newsfeed.get"
         urlComponents.queryItems?.append(contentsOf: [
             URLQueryItem(name: "filter", value: "post"),
-            URLQueryItem(name: "count", value: "3"),
+            URLQueryItem(name: "count", value: "1"),
         ])
-        
+
         if let url = urlComponents.url {
             AF
                 .request(url)
@@ -163,27 +211,33 @@ class NetworkRequests {
                     DispatchQueue.global().async {
 
                        do {
-                       
-//                        let formatter = DateFormatter()
-//                        formatter.dateFormat = "y-MM-dd"
-//                        JSONDecoder().dateDecodingStrategy = .formatted(formatter)
+
                         // PARALLEL PARSING OF ITEMS AND PROFILES
                         let decodedData = try JSONDecoder().decode(Main.self, from: data)
                         let items = decodedData.response.items
+                        print(items)
                         let profiles = decodedData.response.profiles
+                        print(profiles)
+
+                         let formatter = DateFormatter()
+                         formatter.dateFormat = "y-MM-dd"
+                         JSONDecoder().dateDecodingStrategy = .formatted(formatter)
                         DispatchQueue.main.async {
                             completion(items, profiles)
                         }
-                       
-                        
+
                        } catch {
                            print(error)
                        }
                     }
                 }
         }
-        
+
     }
+    
+    
+    
+
 
     
 }
