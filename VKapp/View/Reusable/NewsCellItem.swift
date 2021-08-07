@@ -25,9 +25,9 @@ class NewsCellItem: UITableViewCell {
         
         newsText.text = text
         newsImage.kf.setImage(with: URL(string: image))
-        setLikeButton(likes: likes)
-        setCommentButton(comments: comments)
-        setRepostButton(reposts: reposts)
+        likeButton = setLikeButton(likes: likes)
+        commentButton = setCommentButton(comments: comments)
+        repostButton = setRepostButton(reposts: reposts)
 
     }
 
