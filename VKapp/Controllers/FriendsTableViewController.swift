@@ -39,10 +39,6 @@ class FriendsTableViewController: UITableViewController, UISearchBarDelegate {
         searchFriends = users
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-    }
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         token?.invalidate()
@@ -77,8 +73,9 @@ class FriendsTableViewController: UITableViewController, UISearchBarDelegate {
         } else {
             searchFriends = searchFriends?.filter("firstName CONTAINS[cd] %@ OR lastName CONTAINS[cd] %@", searchBar.text!, searchBar.text!).sorted(byKeyPath: "firstName", ascending: true)
         }
-
-        tableView.reloadData()
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
     }
 
     // MARK: - TableView Delegate Methods
@@ -123,7 +120,6 @@ extension FriendsTableViewController {
     }
     @objc private func refresh() {
         getUsers()
-        
     }
     private func getUsers() {
         networkService.getFriends { [weak self] vkFriends in
@@ -141,32 +137,3 @@ extension FriendsTableViewController {
     
     
 }
-//extension FriendsTableViewController: UITableViewDataSourcePrefetching {
-//    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
-//        guard
-//            let maxRow = indexPaths.map({$0.row}).max(),  // .section ( for sections)
-//            let users = self.users
-//        else { return }
-//        if
-//            maxRow > users.count - 4,
-//            !isLoading {
-//            isLoading = true
-//            networkService.getFriends { [weak self] users in
-//                guard
-//                    let self = self,
-//                    let selfUsers = self.users,
-//                    let users = users
-//                else { return }
-//                let indexSet = IndexSet(integersIn: selfUsers.count ..< selfUsers.count + users.count)
-//                var userArr = [Friend]()
-//                userArr.append(contentsOf: users)
-//                self.tableView.insertSections(indexSet, with: .automatic)
-//                self.tableView.insertRows(at: <#T##[IndexPath]#>, with: <#T##UITableView.RowAnimation#>)
-//                self.isLoading = false
-//                    
-//            }
-//            }
-//    }
-//    
-//    
-//}

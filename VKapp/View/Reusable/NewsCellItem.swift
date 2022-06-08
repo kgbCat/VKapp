@@ -32,9 +32,7 @@ class NewsCellItem: UITableViewCell {
     }
 
     func setLikeButton(likes: Int) -> UIButton {
-        
-//        let likeButton = UIButton(frame: CGRect(x: 10, y: 5, width: 40, height:  40))
-     
+
         if likes == 0 {
             likeButton.tintColor = .white
             likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
@@ -66,8 +64,6 @@ class NewsCellItem: UITableViewCell {
         return commentButton
     }
     func setRepostButton(reposts: Int) -> UIButton {
-//        let RepostButton = UIButton(frame: CGRect(x: 110, y: 5, width: 40, height:  40))
-     
         if reposts == 0 {
             repostButton.tintColor = .white
             repostButton.setImage(UIImage(systemName: "arrowshape.turn.up.left"), for: .normal)

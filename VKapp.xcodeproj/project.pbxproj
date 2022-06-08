@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -15,7 +15,6 @@
 		0A62C1C026AEB3EB00AA0A2D /* Comments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A62C1BF26AEB3EB00AA0A2D /* Comments.swift */; };
 		0A62C1C326AEB40B00AA0A2D /* Likes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A62C1C226AEB40B00AA0A2D /* Likes.swift */; };
 		0A62C1C626AEB44400AA0A2D /* Reposts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A62C1C526AEB44400AA0A2D /* Reposts.swift */; };
-		0A8C28BD269AA73900A1784E /* BetterCodable in Frameworks */ = {isa = PBXBuildFile; productRef = 0A8C28BC269AA73900A1784E /* BetterCodable */; };
 		0A8C28EB26A0ECDC00A1784E /* MyGroups.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8C28EA26A0ECDC00A1784E /* MyGroups.swift */; };
 		0A8C28F126A27C9B00A1784E /* NewsCellItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0A8C28F026A27C9B00A1784E /* NewsCellItem.xib */; };
 		0A8C28FC26A36F8C00A1784E /* NewsCellItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8C28FB26A36F8C00A1784E /* NewsCellItem.swift */; };
@@ -109,7 +108,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				7F3E01683A2E6E12A50B4053 /* Pods_VKapp.framework in Frameworks */,
-				0A8C28BD269AA73900A1784E /* BetterCodable in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -133,6 +131,7 @@
 				0A1941DB2693FE5A003CCD63 /* GroupTableViewCell.swift */,
 				0AC8C91F26952C1600F4C28D /* GroupCell.xib */,
 				0A1941E02693FE84003CCD63 /* PhotoCollectionViewCell.swift */,
+				0AC8C92326952C5100F4C28D /* FriendPhoto.xib */,
 				0A8C28F026A27C9B00A1784E /* NewsCellItem.xib */,
 				0A8C28FB26A36F8C00A1784E /* NewsCellItem.swift */,
 			);
@@ -232,7 +231,6 @@
 				0AEA7CCE2693DEEA00231AED /* NetworkRequests.swift */,
 				0AEA7CD12693DF1100231AED /* RealmService.swift */,
 				0A8C292F26AA877800A1784E /* PhotoService.swift */,
-				0AC8C92326952C5100F4C28D /* FriendPhoto.xib */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -308,7 +306,6 @@
 			);
 			name = VKapp;
 			packageProductDependencies = (
-				0A8C28BC269AA73900A1784E /* BetterCodable */,
 			);
 			productName = VKapp;
 			productReference = 0AEA7CAB2693DC9D00231AED /* VKapp.app */;
@@ -338,7 +335,6 @@
 			);
 			mainGroup = 0AEA7CA22693DC9D00231AED;
 			packageReferences = (
-				0A8C28BB269AA73900A1784E /* XCRemoteSwiftPackageReference "BetterCodable" */,
 			);
 			productRefGroup = 0AEA7CAC2693DC9D00231AED /* Products */;
 			projectDirPath = "";
@@ -605,7 +601,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.VKapp.kgbCat.VKapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -625,7 +621,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.VKapp.kgbCat.VKapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -651,25 +647,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		0A8C28BB269AA73900A1784E /* XCRemoteSwiftPackageReference "BetterCodable" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/marksands/BetterCodable.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.4.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		0A8C28BC269AA73900A1784E /* BetterCodable */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0A8C28BB269AA73900A1784E /* XCRemoteSwiftPackageReference "BetterCodable" */;
-			productName = BetterCodable;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 0AEA7CA32693DC9D00231AED /* Project object */;
 }

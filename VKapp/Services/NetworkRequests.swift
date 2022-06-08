@@ -31,7 +31,6 @@ class NetworkRequests {
             URLQueryItem(name: "order", value: "random"),
             URLQueryItem(name: "offset", value: "5"),
             URLQueryItem(name: "fields", value: "photo_200_orig"),
-//            URLQueryItem(name: "count", value: "50"),
                 ])
         if let url = urlComponents.url {
             AF
