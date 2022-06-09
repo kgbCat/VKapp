@@ -8,7 +8,7 @@
 import Foundation
 import SwiftyJSON
 
-struct MyGroups: Codable {
+struct MyGroups: Codable, Equatable {
     var groupId: Int
     var name: String
     var photo: String

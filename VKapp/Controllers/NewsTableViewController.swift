@@ -10,29 +10,75 @@ import UIKit
 class NewsTableViewController: UITableViewController {
     
     private let networkService = NetworkRequests()
-
-    private var items = [Items]() {
-        didSet {
-            tableView.reloadData()
-        }
-    }
-    private var profiles = [Profiles]() {
-        didSet {
-            tableView.reloadData()
-        }
-    }
-    var idProfile: [Int] = []
-    var idItem: [Int] = []
+    private var items = [Items]()
+    private var profiles = [Profiles]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-    // register nib for NewsCellProfile
-        let nib1 = UINib(nibName: K.CellId.NewsCellProfile, bundle: nil)
-        tableView.register(nib1, forCellReuseIdentifier: K.CellId.NewsCellProfile)
-    // register nib for NewsCellItem
-        let nib2 = UINib(nibName: K.CellId.NewsCellItem, bundle: nil)
-        tableView.register(nib2, forCellReuseIdentifier: K.CellId.NewsCellItem)
-    // get data
+        makeRefreshControl()
+        registerNib()
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 600
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        getNews()
+    }
+   
+    // MARK: - Table view data source
+
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return profiles.count
+    }
+
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: K.CellId.NewsCellItem,
+                                                       for: indexPath) as? NewsCellItem
+        else { return UITableViewCell() }
+
+        let currentProfile = profiles[indexPath.row]
+        var imageUrl = ""
+        items.forEach { item in
+            if item.source_id  == currentProfile.id {
+                item.attachments?.forEach({ attachment in
+                    if let photo = attachment.photo {
+                        photo.sizes?.forEach({ size in
+                            if size.type  == "x" {
+                                imageUrl = size.url
+                            }
+                        })
+                        cell.configure(
+                            avatar: currentProfile.photo_50,
+                            profileName: currentProfile.fullName,
+                            text: item.text ?? "",
+                            image: imageUrl,
+                            likes: item.likes?.count ?? 0,
+                            comments: item.comments?.count ?? 0,
+                            reposts: item.reposts?.count ?? 0
+                        )
+                    }
+                })
+            }
+        }
+        return cell
+    }
+}
+
+extension NewsTableViewController {
+    private func registerNib() {
+        let nib = UINib(nibName: K.CellId.NewsCellItem, bundle: nil)
+        tableView.register(nib, forCellReuseIdentifier: K.CellId.NewsCellItem)
+    }
+    
+    private func makeRefreshControl(){
+        tableView.refreshControl = UIRefreshControl()
+        tableView.refreshControl?.addTarget(self, action: #selector(refresh), for: .valueChanged)
+    }
+    @objc private func refresh() {
+        getNews()
+    }
+    
+    private func getNews() {
         networkService.getNews { [weak self] Items, Profiles in
             guard
                 let self = self,
@@ -41,124 +87,9 @@ class NewsTableViewController: UITableViewController {
             else { return }
             self.items = items
             self.profiles = profiles
-            dump(items)
-            dump(profiles)
-
-        }
-        
-       
-        for profile in profiles {
-            idProfile.append(profile.id)
-        }
-        for item in items {
-            idItem.append(item.source_id)
-        }
-
-    }
-   
-    // MARK: - Table view data source
-
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 1
-    }
-
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return items.count + profiles.count
-    }
-
-
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        let cell = UITableViewCell()
-        
-  
-        if indexPath.row == 0{
-            // register profileCell
-            guard let cell = (tableView.dequeueReusableCell(withIdentifier: K.CellId.NewsCellProfile, for: indexPath) as? NewsCellProfile)
-            else { return UITableViewCell() }
-            let currentProfile = profiles[indexPath.row]
-            cell.configure(photo: currentProfile.photo_50, name: currentProfile.fullName, id: currentProfile.id)
-            return cell
-
-        }
-        else if indexPath.row > 0 {
-            if idProfile[indexPath.row] == idItem[indexPath.row] {
-                guard let cell = tableView.dequeueReusableCell(withIdentifier: K.CellId.NewsCellItem, for: indexPath) as? NewsCellItem
-                else { return UITableViewCell() }
-                let currentItemNews = items[indexPath.row]
-                let photos = currentItemNews.attachments
-                var getPhotoSize = [Sizes]()
-                for photo in photos {
-                    getPhotoSize = photo?.photo.sizes as! [Sizes]
-                }
-                var url = ""
-                for size in getPhotoSize {
-
-                    if size.type == "x" {
-                        url = size.url
-                    }
-                }
-                cell.configure(text: currentItemNews.text, image: url, allComments: currentItemNews.comments.count, allLikes: currentItemNews.likes.count, allReposts: currentItemNews.reposts.count, id: currentItemNews.source_id)
-                return cell
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
             }
-            else {
-                guard let cell = (tableView.dequeueReusableCell(withIdentifier: K.CellId.NewsCellProfile, for: indexPath) as? NewsCellProfile)
-                else { return UITableViewCell() }
-                let currentProfile = profiles[indexPath.row]
-                cell.configure(photo: currentProfile.photo_50, name: currentProfile.fullName, id: currentProfile.id)
-            }
-            
         }
-
-        return cell
     }
-
-   
-
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
-    }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

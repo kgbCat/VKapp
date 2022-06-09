@@ -7,8 +7,8 @@
 
 import UIKit
 
-
 class SearchGroupsTableViewController: UITableViewController, UISearchBarDelegate {
+    
     private let networkService = NetworkRequests()
 
      var searchedGroups = [MyGroups]() {
@@ -21,45 +21,20 @@ class SearchGroupsTableViewController: UITableViewController, UISearchBarDelegat
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        makeRefreshControl()
+        registerNib()
         searchBar.delegate = self
         searchBar.backgroundColor = .clear
-        navigationItem.backBarButtonItem = .none
-        navigationItem.backBarButtonItem?.tintColor = .white
-        let nib = UINib(nibName: K.CellId.GroupCell, bundle: nil)
-        tableView.register(nib, forCellReuseIdentifier: K.CellId.GroupCell)
-
-
-    }
         
-//     MARK SEARCH BAR
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchBar.text != "" {
-            networkService.searchGroups(search: searchBar.text!) { [weak self] VKGroups in
-                guard
-                    let self = self,
-                    let groups = VKGroups
-                else {return}
-                self.searchedGroups = groups
-            }
-            
-            searchBar.backgroundColor = UIColor(.yellow)
-      
-            tableView.reloadData()
-        }
+
+
     }
-          
-//    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-//        searchBar.text = ""
-//        tableView.reloadData()
-//    }
 
     // MARK: - Table view data source
-
-
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return searchedGroups.count
     }
-
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard
@@ -73,13 +48,47 @@ class SearchGroupsTableViewController: UITableViewController, UISearchBarDelegat
     }
     
     // MARK: - Table view delegate methods
+    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: K.Segue.addGroup,
                      sender: nil)
         tableView.deselectRow(at: indexPath, animated: true)
         
     }
+    //     MARK SEARCH BAR
+        func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+            if searchBar.text != "" {
+                searchGroups()
+                searchBar.backgroundColor = UIColor(.yellow)
+                tableView.reloadData()
+            }
+        }
     
+}
+extension SearchGroupsTableViewController {
+    private func registerNib() {
+        let nib = UINib(nibName: K.CellId.GroupCell, bundle: nil)
+        tableView.register(nib, forCellReuseIdentifier: K.CellId.GroupCell)
+    }
+    private func makeRefreshControl(){
+        // Refresh
+        tableView.refreshControl = UIRefreshControl()
+        tableView.refreshControl?.addTarget(self, action: #selector(refresh), for: .valueChanged)
+    }
     
-  
+    @objc private func refresh() {
+        searchGroups()
+    }
+    
+    private func searchGroups() {
+        networkService.searchGroups(search: searchBar.text!) { [weak self] VKGroups in
+            self?.tableView.refreshControl?.tintColor = .white
+            self?.tableView.refreshControl?.endRefreshing()
+            guard
+                let self = self,
+                let groups = VKGroups
+            else {return}
+            self.searchedGroups = groups
+        }
+    }
 }

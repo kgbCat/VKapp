@@ -20,7 +20,7 @@ struct K {
         static let FriendsCell = "UserCell"
         static let FriendPhotoCell = "FriendPhoto"
         static let GroupCell = "GroupCell"
-        static let NewsCellProfile = "NewsCellProfile"
+        static let NewsCellPhoto = "NewsCellPhoto"
         static let NewsCellItem = "NewsCellItem"
     }
     

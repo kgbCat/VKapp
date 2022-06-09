@@ -1,0 +1,5 @@
+Pods/
+*.a
+.DS_Store
+Podfile.lock
+VKapp.xcworkspace
