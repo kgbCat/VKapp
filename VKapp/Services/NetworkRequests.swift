@@ -50,15 +50,12 @@ class NetworkRequests {
                     }
                 }
         }
-
     }
 
     func getGroup(completion: @escaping ([MyGroups]?) -> Void) {
         urlComponents.path = "/method/\(K.NetworkPaths.getGroups)"
         urlComponents.queryItems?.append(contentsOf: [
             URLQueryItem(name: "extended", value: "1"),
-//            URLQueryItem(name: "count", value: "50"),
-
                 ])
         if let url = urlComponents.url {
             AF
@@ -79,7 +76,7 @@ class NetworkRequests {
                         completion(nil)
                     }
                 }
-    }
+        }
     }
 
     func searchGroups(search q: String, completion: @escaping ([MyGroups]?) -> Void) {
@@ -112,7 +109,7 @@ class NetworkRequests {
                         completion(nil)
                     }
                 }
-    }
+        }
     }
     
     func getPhotos(userID:Int, completion: @escaping ([VkPhoto]?) -> Void) {
@@ -149,50 +146,45 @@ class NetworkRequests {
         urlComponents.path = "/method/newsfeed.get"
         urlComponents.queryItems?.append(contentsOf: [
             URLQueryItem(name: "filter", value: "post"),
-            URLQueryItem(name: "count", value: "40"),
+            URLQueryItem(name: "count", value: "50"),
         ])
 
-        if let url = urlComponents.url {
-            AF
-                .request(url)
-                .responseData { response in
-                    guard let data = response.value else { return }
-                    DispatchQueue.global().async {
+        guard let url = urlComponents.url else { return }
+        let session = URLSession.shared
+        let dataTask = session.dataTask(with: url) { data, response, error in
+            if error == nil && data != nil {
+                let decoder = JSONDecoder()
 
-                       do {
+                do {
+                    let newsFeed = try decoder.decode(NewsFeed.self, from: data!)
 
-                        // PARALLEL PARSING OF ITEMS AND PROFILES
-                        let decodedData = try JSONDecoder().decode(Main.self, from: data)
-                        let items = decodedData.response.items
-                        var itemsChecked = [Items]()
-                        var idArr = [Int]()
-                        for (item) in items {
-                            if !item.attachments.isEmpty {
-                                idArr.append(item.source_id)
-                                itemsChecked.append(item)
-                            }
+                    let items = newsFeed.response.items
+                    let profiles = newsFeed.response.profiles
+
+                    var itemsChecked = [Items]()
+                    var profilesChecked = [Profiles]()
+                    var ids = [Int]()
+
+                    items.forEach { item in
+                        if item.attachments != nil {
+                            itemsChecked.append(item)
+                            ids.append(item.source_id)
                         }
-                  
-                        let profiles = decodedData.response.profiles
-                        var profilesChecked = [Profiles]()
-                        for profile in profiles {
-                            if idArr.contains(profile.id) {
-                                profilesChecked.append(profile)
-                            }
-                        }
-
-                        DispatchQueue.main.async {
-                            completion(itemsChecked, profilesChecked)
-                        }
-
-                       } catch {
-                           print(error)
-                       }
                     }
-                }
-        }
 
+                    profiles.forEach { profile in
+                        if ids.contains(profile.id) {
+                            profilesChecked.append(profile)
+                        }
+                    }
+                     completion(itemsChecked, profilesChecked)
+                }
+                catch {
+                    print("Error in JSON parsing")
+                }
+            }
+        }
+        dataTask.resume()
     }
-      
 }
     

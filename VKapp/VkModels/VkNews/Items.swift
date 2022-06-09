@@ -6,42 +6,22 @@
 //
 
 import Foundation
-struct Items: Codable, Comparable {
+
+struct Items: Codable {
     static func < (lhs: Items, rhs: Items) -> Bool {
         return lhs.source_id < rhs.source_id
-
     }
-    
+
     static func == (lhs: Items, rhs: Items) -> Bool {
         return lhs.source_id == rhs.source_id
-
     }
     
     let source_id: Int
-    let date: Int
-    let text:String
-    let attachments: [Attachments?]
-    let comments: Comments
-    let likes: Likes
-    let reposts: Reposts
-    
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.source_id = try container.decodeIfPresent(Int.self, forKey: .source_id) ?? 0
-        self.date = try container.decodeIfPresent(Int.self, forKey: .date) ?? 0
-        self.text = try container.decodeIfPresent(String.self, forKey: .text) ?? ""
-        self.attachments = try container.decodeIfPresent([Attachments].self, forKey: .attachments) ?? [Attachments]()
-        self.comments = try container.decodeIfPresent(Comments.self, forKey: .comments) ?? Comments()
-        self.likes = try container.decodeIfPresent(Likes.self, forKey: .likes) ?? Likes()
-        self.reposts = try container.decodeIfPresent(Reposts.self, forKey: .reposts) ?? Reposts()
-    }
-    init() {
-        self.source_id = 0
-        self.date = 0
-        self.attachments = [Attachments?]()
-        self.comments = Comments()
-        self.likes = Likes()
-        self.reposts = Reposts()
-        self.text = ""
-    }
+    let text:String?
+    let attachments: [Attachments]?
+    let comments: Comments?
+    let likes: Likes?
+    let reposts: Reposts?
+
 }
+

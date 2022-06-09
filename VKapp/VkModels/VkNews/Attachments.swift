@@ -9,15 +9,6 @@
 import Foundation
 
 struct Attachments: Codable {
-    let photo: Photo
-    
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.photo = try container.decode(Photo.self, forKey: .photo)
-    }
-    init() {
-        self.photo = Photo()
-    }
-    
+    let photo: Photo?
 }
 

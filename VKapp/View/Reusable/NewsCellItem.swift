@@ -12,6 +12,8 @@ import Kingfisher
 class NewsCellItem: UITableViewCell {
     
     
+    @IBOutlet weak var profileNameLabel: UILabel!
+    @IBOutlet weak var avatarImage: UserAvatarImg!
     @IBOutlet weak var newsText: UILabel!
 
     @IBOutlet weak var newsImage: UIImageView!
@@ -21,10 +23,13 @@ class NewsCellItem: UITableViewCell {
     @IBOutlet weak var commentButton: UIButton!
     
     
-    func configure( text: String, image: String, likes: Int, comments: Int, reposts: Int) {
-        
+    func configure( avatar: String, profileName: String, text: String, image: String, likes: Int, comments: Int, reposts: Int) {
+
+        avatarImage.kf.setImage(with: URL(string: avatar))
+        profileNameLabel.text = profileName
         newsText.text = text
         newsImage.kf.setImage(with: URL(string: image))
+
         likeButton = setLikeButton(likes: likes)
         commentButton = setCommentButton(comments: comments)
         repostButton = setRepostButton(reposts: reposts)
@@ -48,8 +53,6 @@ class NewsCellItem: UITableViewCell {
         return likeButton
     }
     func setCommentButton(comments: Int) -> UIButton {
-//        let commentButton = UIButton(frame: CGRect(x: 60, y: 5, width: 40, height:  40))
-     
         if comments == 0 {
             commentButton.setImage(UIImage(systemName: "bubble.right"), for: .normal)
             commentButton.tintColor = .white

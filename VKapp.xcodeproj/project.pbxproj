@@ -18,7 +18,7 @@
 		0A8C28EB26A0ECDC00A1784E /* MyGroups.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8C28EA26A0ECDC00A1784E /* MyGroups.swift */; };
 		0A8C28F126A27C9B00A1784E /* NewsCellItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0A8C28F026A27C9B00A1784E /* NewsCellItem.xib */; };
 		0A8C28FC26A36F8C00A1784E /* NewsCellItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8C28FB26A36F8C00A1784E /* NewsCellItem.swift */; };
-		0A8C290426AA64D100A1784E /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8C290326AA64D100A1784E /* Main.swift */; };
+		0A8C290426AA64D100A1784E /* NewsFeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8C290326AA64D100A1784E /* NewsFeed.swift */; };
 		0A8C290726AA64DF00A1784E /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8C290626AA64DF00A1784E /* Response.swift */; };
 		0A8C290A26AA64E700A1784E /* Items.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8C290926AA64E700A1784E /* Items.swift */; };
 		0A8C290D26AA64F000A1784E /* Profiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8C290C26AA64F000A1784E /* Profiles.swift */; };
@@ -64,7 +64,7 @@
 		0A8C28EA26A0ECDC00A1784E /* MyGroups.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyGroups.swift; sourceTree = "<group>"; };
 		0A8C28F026A27C9B00A1784E /* NewsCellItem.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NewsCellItem.xib; sourceTree = "<group>"; };
 		0A8C28FB26A36F8C00A1784E /* NewsCellItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsCellItem.swift; sourceTree = "<group>"; };
-		0A8C290326AA64D100A1784E /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
+		0A8C290326AA64D100A1784E /* NewsFeed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsFeed.swift; sourceTree = "<group>"; };
 		0A8C290626AA64DF00A1784E /* Response.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Response.swift; sourceTree = "<group>"; };
 		0A8C290926AA64E700A1784E /* Items.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Items.swift; sourceTree = "<group>"; };
 		0A8C290C26AA64F000A1784E /* Profiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profiles.swift; sourceTree = "<group>"; };
@@ -141,7 +141,7 @@
 		0A8C290226AA649900A1784E /* VkNews */ = {
 			isa = PBXGroup;
 			children = (
-				0A8C290326AA64D100A1784E /* Main.swift */,
+				0A8C290326AA64D100A1784E /* NewsFeed.swift */,
 				0A8C290626AA64DF00A1784E /* Response.swift */,
 				0A8C290926AA64E700A1784E /* Items.swift */,
 				0A8C290C26AA64F000A1784E /* Profiles.swift */,
@@ -423,7 +423,7 @@
 				0A8C291626AA652900A1784E /* Sizes.swift in Sources */,
 				0A8C290D26AA64F000A1784E /* Profiles.swift in Sources */,
 				0AEA7CC62693DD8300231AED /* LoginViewController.swift in Sources */,
-				0A8C290426AA64D100A1784E /* Main.swift in Sources */,
+				0A8C290426AA64D100A1784E /* NewsFeed.swift in Sources */,
 				0A62C1C626AEB44400AA0A2D /* Reposts.swift in Sources */,
 				0AEA7CD22693DF1100231AED /* RealmService.swift in Sources */,
 				0A8C28EB26A0ECDC00A1784E /* MyGroups.swift in Sources */,
